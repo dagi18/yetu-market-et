@@ -1,8 +1,30 @@
 
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Box, ChevronDown, ClipboardList, CreditCard, Home, LayoutGrid, LogOut, Menu, MessageSquare, Package, PieChart, Settings, ShoppingBag, ShoppingCart, Tags, User, Users, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/auth/useAuth";
+import { 
+  BarChart3, 
+  Box, 
+  ChevronDown, 
+  ClipboardList, 
+  CreditCard, 
+  Home, 
+  LayoutGrid, 
+  LogOut, 
+  Menu, 
+  MessageSquare, 
+  Package, 
+  PieChart, 
+  Settings, 
+  ShoppingBag, 
+  ShoppingCart, 
+  Tags, 
+  User, 
+  Users, 
+  X 
+} from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -11,6 +33,9 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { adminLogout } = useAuth();
+  const { toast } = useToast();
   
   // Navigation items for the sidebar
   const navigation = [
@@ -27,6 +52,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   // Check if the current path matches a navigation item
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
+
+  const handleLogout = () => {
+    adminLogout();
+    setSidebarOpen(false);
   };
   
   return (
@@ -58,6 +88,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                         ? 'bg-brand-green text-white'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
+                    onClick={() => setSidebarOpen(false)}
                   >
                     <span className="mr-3">{item.icon}</span>
                     {item.name}
@@ -68,13 +99,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           </nav>
           
           <div className="border-t border-gray-200 p-4">
-            <Link
-              to="/logout"
-              className="flex items-center px-2 py-2 text-sm font-medium text-red-600 hover:bg-gray-100 rounded-md"
+            <Button
+              onClick={handleLogout}
+              className="flex w-full items-center px-2 py-2 text-sm font-medium text-red-600 hover:bg-gray-100 rounded-md"
             >
               <LogOut className="h-5 w-5 mr-3" />
               Logout
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -109,13 +140,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           </nav>
           
           <div className="border-t border-gray-200 p-4">
-            <Link
-              to="/logout"
-              className="flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-gray-100 rounded-md"
+            <Button
+              onClick={handleLogout}
+              className="flex w-full items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-gray-100 rounded-md"
             >
               <LogOut className="h-5 w-5 mr-3" />
               Logout
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

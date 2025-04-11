@@ -14,6 +14,12 @@ import Category from "./pages/Category";
 import SellProduct from "./pages/SellProduct";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ProductsManagement from "./pages/admin/ProductsManagement";
+import CategoriesManagement from "./pages/admin/CategoriesManagement";
+import OrdersManagement from "./pages/admin/OrdersManagement";
+import CustomersManagement from "./pages/admin/CustomersManagement";
+import ReviewsManagement from "./pages/admin/ReviewsManagement";
+import Analytics from "./pages/admin/Analytics";
+import Settings from "./pages/admin/Settings";
 import AdminLogin from "./pages/admin/Login";
 import NotFound from "./pages/NotFound";
 
@@ -59,6 +65,36 @@ const App = () => (
             <Route path="/admin/products" element={
               <AuthGuard requiredRole="admin">
                 <ProductsManagement />
+              </AuthGuard>
+            } />
+            <Route path="/admin/categories" element={
+              <AuthGuard requiredRole="admin">
+                <CategoriesManagement />
+              </AuthGuard>
+            } />
+            <Route path="/admin/orders" element={
+              <AuthGuard requiredRole="admin">
+                <OrdersManagement />
+              </AuthGuard>
+            } />
+            <Route path="/admin/customers" element={
+              <AuthGuard requiredRole="admin">
+                <CustomersManagement />
+              </AuthGuard>
+            } />
+            <Route path="/admin/reviews" element={
+              <AuthGuard requiredRole="admin">
+                <ReviewsManagement />
+              </AuthGuard>
+            } />
+            <Route path="/admin/analytics" element={
+              <AuthGuard requiredRole="admin">
+                <Analytics />
+              </AuthGuard>
+            } />
+            <Route path="/admin/settings" element={
+              <AuthGuard requiredRole="admin">
+                <Settings />
               </AuthGuard>
             } />
             
