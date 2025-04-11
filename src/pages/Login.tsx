@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,105 +8,30 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/components/auth/useAuth';
-import { supabase } from '@/lib/supabase';
-import { Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { login } = useAuth();
-  const navigate = useNavigate();
   
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      const success = await login(email, password);
-      
-      if (success) {
-        navigate('/');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast({
-        title: "Login Error",
-        description: "An unexpected error occurred during login",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // This would be where you implement actual authentication
+    toast({
+      title: "Login Successful!",
+      description: "Welcome back to YetuMarket.",
+    });
   };
   
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      // Register with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (authError) {
-        toast({
-          title: "Registration Failed",
-          description: authError.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      if (authData.user) {
-        // Add user details to users table
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              user_id: authData.user.id,
-              email: email,
-              full_name: fullName,
-              phone_number: phone,
-            },
-          ]);
-          
-        if (profileError) {
-          toast({
-            title: "Registration Issue",
-            description: "Account created but failed to save profile details",
-            variant: "destructive",
-          });
-          console.error('Error saving profile:', profileError);
-        } else {
-          toast({
-            title: "Registration Successful!",
-            description: "Welcome to YetuMarket. You can now start buying and selling.",
-          });
-          
-          // Redirect to homepage after a short delay
-          setTimeout(() => {
-            navigate('/');
-          }, 1500);
-        }
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast({
-        title: "Registration Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // This would be where you implement actual registration
+    toast({
+      title: "Registration Successful!",
+      description: "Welcome to YetuMarket. You can now start buying and selling.",
+    });
   };
   
   return (
@@ -130,16 +55,15 @@ const Login = () => {
                         htmlFor="email" 
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        Email
+                        Email or Phone
                       </label>
                       <Input
                         id="email"
-                        type="email" 
+                        type="text" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
+                        placeholder="Enter your email or phone"
                         required
-                        disabled={isLoading}
                       />
                     </div>
                     
@@ -165,26 +89,21 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
                         required
-                        disabled={isLoading}
                       />
-                      
-                      {/* Demo credentials */}
-                      <div className="mt-2 text-sm text-gray-600">
-                        <p>Demo user: user@yetumarket.com / userpass</p>
-                        <p>Demo admin: admin@yetumarket.com / adminpass</p>
-                      </div>
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Logging in...
-                        </>
-                      ) : (
-                        "Login"
-                      )}
+                    <Button type="submit" className="w-full">
+                      Login
                     </Button>
+                    
+                    <div className="text-center mt-4">
+                      <p className="text-sm text-gray-600">
+                        Don't have an account?{" "}
+                        <button type="button" className="text-brand-green hover:underline">
+                          Register
+                        </button>
+                      </p>
+                    </div>
                   </form>
                 </TabsContent>
                 
@@ -204,7 +123,6 @@ const Login = () => {
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Enter your full name"
                         required
-                        disabled={isLoading}
                       />
                     </div>
                     
@@ -222,7 +140,6 @@ const Login = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         required
-                        disabled={isLoading}
                       />
                     </div>
                     
@@ -240,7 +157,6 @@ const Login = () => {
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="E.g. 0911234567"
                         required
-                        disabled={isLoading}
                       />
                     </div>
                     
@@ -256,22 +172,13 @@ const Login = () => {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Create a password (min 6 characters)"
-                        minLength={6}
+                        placeholder="Create a password"
                         required
-                        disabled={isLoading}
                       />
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Registering...
-                        </>
-                      ) : (
-                        "Register"
-                      )}
+                    <Button type="submit" className="w-full">
+                      Register
                     </Button>
                     
                     <div className="text-center mt-4">

@@ -2,8 +2,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
 
 interface UserData {
   name: string;
@@ -30,117 +28,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check for authenticated session on load
   useEffect(() => {
-    const checkAuthSession = async () => {
-      // Get session from Supabase
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // Get user profile
-        const { data: userProfile } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', session.user.email)
-          .single();
-
-        if (userProfile) {
-          const userData = {
-            name: userProfile.full_name || 'User',
-            email: session.user.email || '',
-            role: userProfile.role || 'user',
-          };
-          
-          setUser(userData);
+    // Check for user authentication
+    const userAuth = localStorage.getItem('userAuth');
+    if (userAuth) {
+      try {
+        const parsedAuth = JSON.parse(userAuth);
+        if (parsedAuth.isAuth) {
+          setUser(parsedAuth.user);
           setIsAuth(true);
-          
-          // Check if user is admin
-          if (userData.role === 'admin') {
-            setIsAdmin(true);
-          }
         }
+      } catch (error) {
+        console.error('Error parsing user auth data:', error);
       }
-    };
+    }
 
-    checkAuthSession();
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          // Get user profile
-          const { data: userProfile } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', session.user.email)
-            .single();
-
-          if (userProfile) {
-            const userData = {
-              name: userProfile.full_name || 'User',
-              email: session.user.email || '',
-              role: userProfile.role || 'user',
-            };
-            
-            setUser(userData);
-            setIsAuth(true);
-            
-            // Check if user is admin
-            if (userData.role === 'admin') {
-              setIsAdmin(true);
-            }
-          }
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setIsAuth(false);
-          setIsAdmin(false);
+    // Check for admin authentication
+    const adminAuth = localStorage.getItem('adminAuth');
+    if (adminAuth) {
+      try {
+        const parsedAuth = JSON.parse(adminAuth);
+        if (parsedAuth.isAdmin) {
+          setIsAdmin(true);
         }
+      } catch (error) {
+        console.error('Error parsing admin auth data:', error);
       }
-    );
-
-    // Clean up subscription on unmount
-    return () => {
-      subscription.unsubscribe();
-    };
+    }
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Sign in with Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast({
-          title: "Login Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      if (data.user) {
-        // Get user profile
-        const { data: userProfile, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', data.user.email)
-          .single();
-
-        if (profileError) {
-          console.error('Error fetching user profile:', profileError);
-        }
-
+      // For demo, hardcoded credentials
+      if (email === 'user@yetumarket.com' && password === 'userpass') {
         const userData = {
-          name: userProfile?.full_name || 'User',
-          email: data.user.email || '',
-          role: userProfile?.role || 'user',
+          name: 'Demo User',
+          email: email,
+          role: 'user',
         };
         
         setUser(userData);
         setIsAuth(true);
+        
+        // Save to localStorage
+        localStorage.setItem('userAuth', JSON.stringify({
+          isAuth: true,
+          user: userData
+        }));
         
         toast({
           title: "Login Successful",
@@ -149,13 +83,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         return true;
       } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password",
+          variant: "destructive",
+        });
         return false;
       }
     } catch (error) {
-      console.error('Login error:', error);
       toast({
         title: "Login Error",
-        description: "An unexpected error occurred during login",
+        description: "An error occurred during login",
         variant: "destructive",
       });
       return false;
@@ -164,61 +102,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const adminLogin = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Sign in with Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast({
-          title: "Admin Login Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      if (data.user) {
-        // Get user profile
-        const { data: userProfile, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', data.user.email)
-          .single();
-
-        if (profileError) {
-          console.error('Error fetching user profile:', profileError);
-          toast({
-            title: "Admin Login Failed",
-            description: "Could not verify admin privileges",
-            variant: "destructive",
-          });
-          return false;
-        }
-
-        // Check if user has admin role
-        if (userProfile?.role !== 'admin') {
-          toast({
-            title: "Admin Login Failed",
-            description: "You do not have admin privileges",
-            variant: "destructive",
-          });
-          
-          // Sign out as they don't have admin privileges
-          await supabase.auth.signOut();
-          return false;
-        }
-
+      // For demo, hardcoded admin credentials
+      if (email === 'admin@yetumarket.com' && password === 'adminpass') {
         const adminData = {
-          name: userProfile.full_name || 'Admin User',
-          email: data.user.email || '',
-          role: 'admin',
+          name: 'Admin User',
+          email: email,
+          role: 'administrator',
         };
         
-        setUser(adminData);
-        setIsAuth(true);
         setIsAdmin(true);
+        
+        // Save to localStorage
+        localStorage.setItem('adminAuth', JSON.stringify({
+          isAdmin: true,
+          user: adminData
+        }));
         
         toast({
           title: "Admin Login Successful",
@@ -227,63 +125,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         return true;
       } else {
+        toast({
+          title: "Admin Login Failed",
+          description: "Invalid admin credentials",
+          variant: "destructive",
+        });
         return false;
       }
     } catch (error) {
-      console.error('Admin login error:', error);
       toast({
         title: "Login Error",
-        description: "An unexpected error occurred during admin login",
+        description: "An error occurred during admin login",
         variant: "destructive",
       });
       return false;
     }
   };
 
-  const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    
-    if (error) {
-      toast({
-        title: "Logout Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    
+  const logout = () => {
     setUser(null);
     setIsAuth(false);
-    
+    localStorage.removeItem('userAuth');
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out",
     });
-    
     navigate('/');
   };
 
-  const adminLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    
-    if (error) {
-      toast({
-        title: "Logout Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setUser(null);
-    setIsAuth(false);
+  const adminLogout = () => {
     setIsAdmin(false);
-    
+    localStorage.removeItem('adminAuth');
     toast({
       title: "Admin Logged Out",
       description: "You have been successfully logged out of the admin panel",
     });
-    
     navigate('/');
   };
 
