@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, User, LogIn } from "lucide-react";
+import { useAuth } from '@/components/auth/useAuth';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -14,38 +15,26 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { adminLogin } = useAuth();
   
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Sample admin credentials for demo
-    if (email === "admin@yetumarket.com" && password === "adminpass") {
-      toast({
-        title: "Login Successful",
-        description: "Welcome to YetuMarket Admin Panel",
-      });
+    try {
+      const success = await adminLogin(email, password);
       
-      // Save admin session information to localStorage
-      localStorage.setItem('adminAuth', JSON.stringify({
-        isAdmin: true,
-        user: {
-          name: 'Admin User',
-          email: email,
-          role: 'administrator'
-        }
-      }));
-      
-      // Redirect to admin dashboard
-      setTimeout(() => {
+      if (success) {
         navigate('/admin');
-      }, 1000);
-    } else {
+      }
+    } catch (error) {
+      console.error("Admin login error:", error);
       toast({
-        title: "Login Failed",
-        description: "Invalid email or password",
+        title: "Login Error",
+        description: "An unexpected error occurred during login",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -85,6 +74,7 @@ const AdminLogin = () => {
                     className="pl-10"
                     placeholder="admin@example.com"
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <p className="text-sm text-gray-500">
@@ -114,6 +104,7 @@ const AdminLogin = () => {
                     className="pl-10"
                     placeholder="••••••••"
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <p className="text-sm text-gray-500">
