@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -91,3 +92,5 @@ export function ForgotPasswordForm() {
     </Card>
   );
 } 
+
+export default ForgotPasswordForm;

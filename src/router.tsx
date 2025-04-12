@@ -1,9 +1,10 @@
+
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import Layout from '@/components/Layout';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import { LoginForm } from '@/components/auth/LoginForm';
+import { RegisterForm } from '@/components/auth/RegisterForm';
+import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 import Products from '@/pages/Products';
 import ProductDetail from '@/pages/ProductDetail';
 import SellProduct from '@/pages/SellProduct';
@@ -43,7 +44,7 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <Layout><Products /></Layout>,
     children: [
       {
         index: true,

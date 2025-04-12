@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -89,3 +90,5 @@ export function LoginForm() {
     </Card>
   );
 } 
+
+export default LoginForm;

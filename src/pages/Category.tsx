@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -8,6 +8,9 @@ import ProductCard from "@/components/ProductCard";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Grid3X3, List, ChevronRight, ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
+import Layout from "@/components/Layout";
 
 // Sample categories data
 const CATEGORIES = {
@@ -154,38 +157,18 @@ const Category = () => {
   // Get category data based on URL parameter
   const categoryData = categoryId ? CATEGORIES[categoryId as keyof typeof CATEGORIES] : null;
   
-  if (!categoryId || !categoryData) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Category Not Found</h1>
-            <p className="text-gray-600 mb-6">The category you're looking for doesn't exist or has been removed.</p>
-            <Button asChild>
-              <Link to="/">Return to Home</Link>
-            </Button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-  
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      
-      <main className="flex-grow bg-gray-50">
+    <Layout>
+      <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="bg-white py-2 shadow-sm">
+        <div className="bg-white py-2 shadow-sm mb-6">
           <div className="container mx-auto px-4">
             <nav className="text-sm text-gray-500">
               <ol className="flex items-center space-x-1">
                 <li><Link to="/" className="hover:text-brand-green">Home</Link></li>
                 <li className="flex items-center space-x-1">
                   <span>/</span>
-                  <span className="text-gray-900">{categoryData.name}</span>
+                  <span className="text-gray-900">{categoryData?.name}</span>
                 </li>
                 {subcategoryId && (
                   <li className="flex items-center space-x-1">
@@ -198,135 +181,131 @@ const Category = () => {
           </div>
         </div>
         
-        <div className="container mx-auto px-4 py-6">
-          {/* Category Header */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{categoryData.name}</h1>
-            <p className="text-gray-600 mb-0">{categoryData.description}</p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Subcategories Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm p-4 sticky top-20">
-                <h3 className="font-semibold text-lg mb-4">Subcategories</h3>
-                <div className="space-y-2">
-                  {categoryData.subcategories.map((subcat, index) => (
-                    <Link
-                      key={index}
-                      to={`/category/${categoryId}/${subcat.name.toLowerCase().replace(/ /g, '-')}`}
-                      className={`flex items-center justify-between p-2 rounded-md hover:bg-gray-50 ${
-                        subcategoryId === subcat.name.toLowerCase().replace(/ /g, '-') 
-                          ? 'bg-gray-50 text-brand-green font-medium' 
-                          : 'text-gray-700'
-                      }`}
-                    >
-                      <span>{subcat.name}</span>
-                      <span className="text-sm text-gray-500">{subcat.count}</span>
-                    </Link>
-                  ))}
-                </div>
+        {/* Category Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{categoryData?.name}</h1>
+          <p className="text-gray-600 mb-0">{categoryData?.description}</p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Subcategories Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+              <h3 className="font-semibold text-lg mb-4">Subcategories</h3>
+              <div className="space-y-2">
+                {categoryData?.subcategories.map((subcat, index) => (
+                  <Link
+                    key={index}
+                    to={`/category/${categoryId}/${subcat.name.toLowerCase().replace(/ /g, '-')}`}
+                    className={`flex items-center justify-between p-2 rounded-md hover:bg-gray-50 ${
+                      subcategoryId === subcat.name.toLowerCase().replace(/ /g, '-') 
+                        ? 'bg-gray-50 text-brand-green font-medium' 
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    <span>{subcat.name}</span>
+                    <span className="text-sm text-gray-500">{subcat.count}</span>
+                  </Link>
+                ))}
               </div>
             </div>
-            
-            {/* Products Area */}
-            <div className="lg:col-span-3">
-              {/* Sort Controls */}
-              <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-                <div className="flex flex-wrap gap-4 items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-gray-500">Sort by:</span>
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Sort by" />
+          </div>
+          
+          {/* Products Area */}
+          <div className="lg:col-span-3">
+            {/* Sort Controls */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+              <div className="flex flex-wrap gap-4 items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-500">Sort by:</span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="price_low">Price: Low to High</SelectItem>
+                      <SelectItem value="price_high">Price: High to Low</SelectItem>
+                      <SelectItem value="popular">Most Popular</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Show:</span>
+                    <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
+                      <SelectTrigger className="w-[70px]">
+                        <SelectValue placeholder="12" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="newest">Newest First</SelectItem>
-                        <SelectItem value="price_low">Price: Low to High</SelectItem>
-                        <SelectItem value="price_high">Price: High to Low</SelectItem>
-                        <SelectItem value="popular">Most Popular</SelectItem>
+                        <SelectItem value="12">12</SelectItem>
+                        <SelectItem value="24">24</SelectItem>
+                        <SelectItem value="48">48</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500">Show:</span>
-                      <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
-                        <SelectTrigger className="w-[70px]">
-                          <SelectValue placeholder="12" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="12">12</SelectItem>
-                          <SelectItem value="24">24</SelectItem>
-                          <SelectItem value="48">48</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="flex border rounded overflow-hidden">
-                      <button 
-                        className={`p-2 ${viewMode === 'grid' ? 'bg-gray-100' : 'bg-white'}`} 
-                        onClick={() => setViewMode('grid')}
-                      >
-                        <Grid3X3 className="h-5 w-5" />
-                      </button>
-                      <button 
-                        className={`p-2 ${viewMode === 'list' ? 'bg-gray-100' : 'bg-white'}`} 
-                        onClick={() => setViewMode('list')}
-                      >
-                        <List className="h-5 w-5" />
-                      </button>
-                    </div>
+                  <div className="flex border rounded overflow-hidden">
+                    <button 
+                      className={`p-2 ${viewMode === 'grid' ? 'bg-gray-100' : 'bg-white'}`} 
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid3X3 className="h-5 w-5" />
+                    </button>
+                    <button 
+                      className={`p-2 ${viewMode === 'list' ? 'bg-gray-100' : 'bg-white'}`} 
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="h-5 w-5" />
+                    </button>
                   </div>
                 </div>
               </div>
-              
-              {/* Results Count */}
-              <div className="mb-4">
-                <p className="text-gray-600 text-sm">
-                  Showing <span className="font-medium">{PRODUCTS.length}</span> results in 
-                  <span className="font-medium"> {categoryData.name}</span>
-                  {subcategoryId && <span> - {subcategoryId.replace(/-/g, ' ')}</span>}
-                </p>
-              </div>
-              
-              {/* Products Grid */}
-              <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-4`}>
-                {PRODUCTS.map(product => (
-                  <ProductCard key={product.id} {...product} />
-                ))}
-              </div>
-              
-              {/* Pagination */}
-              <div className="mt-8">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+            </div>
+            
+            {/* Results Count */}
+            <div className="mb-4">
+              <p className="text-gray-600 text-sm">
+                Showing <span className="font-medium">{PRODUCTS.length}</span> results in 
+                <span className="font-medium"> {categoryData?.name}</span>
+                {subcategoryId && <span> - {subcategoryId.replace(/-/g, ' ')}</span>}
+              </p>
+            </div>
+            
+            {/* Products Grid */}
+            <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-4`}>
+              {PRODUCTS.map(product => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            <div className="mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious href="#" />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#" isActive>1</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#">2</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#">3</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext href="#" />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
           </div>
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 
