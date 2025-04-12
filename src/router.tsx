@@ -45,74 +45,53 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout><Products /></Layout>,
-    children: [
-      {
-        index: true,
-        element: <Products />,
-      },
-      {
-        path: 'products',
-        children: [
-          {
-            index: true,
-            element: <Products />,
-          },
-          {
-            path: ':id',
-            element: <ProductDetail />,
-          },
-        ],
-      },
-      {
-        path: 'categories',
-        children: [
-          {
-            path: ':id',
-            element: <Category />,
-          },
-        ],
-      },
-      {
-        path: 'sell',
-        element: (
-          <ProtectedRoute>
-            <SellProduct />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'auth',
-        children: [
-          {
-            path: 'login',
-            element: (
-              <AuthRoute>
-                <LoginForm />
-              </AuthRoute>
-            ),
-          },
-          {
-            path: 'register',
-            element: (
-              <AuthRoute>
-                <RegisterForm />
-              </AuthRoute>
-            ),
-          },
-          {
-            path: 'forgot-password',
-            element: (
-              <AuthRoute>
-                <ForgotPasswordForm />
-              </AuthRoute>
-            ),
-          },
-        ],
-      },
-      {
-        path: '*',
-        element: <NotFound />,
-      },
-    ],
   },
-]); 
+  {
+    path: '/products',
+    element: <Layout><Products /></Layout>,
+  },
+  {
+    path: '/products/:id',
+    element: <Layout><ProductDetail /></Layout>,
+  },
+  {
+    path: '/categories/:id',
+    element: <Layout><Category /></Layout>,
+  },
+  {
+    path: '/sell',
+    element: (
+      <ProtectedRoute>
+        <Layout><SellProduct /></Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/login',
+    element: (
+      <AuthRoute>
+        <LoginForm />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: '/register',
+    element: (
+      <AuthRoute>
+        <RegisterForm />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: '/forgot-password',
+    element: (
+      <AuthRoute>
+        <ForgotPasswordForm />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: '*',
+    element: <Layout><NotFound /></Layout>,
+  },
+]);

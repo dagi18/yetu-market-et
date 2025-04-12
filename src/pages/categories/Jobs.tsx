@@ -1,8 +1,5 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Filter, Search, MapPin, Briefcase, Clock, ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -184,177 +181,171 @@ const Jobs = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <div className="flex-grow bg-gray-50">
+      {/* Breadcrumb */}
+      <div className="bg-white py-2 shadow-sm">
+        <div className="container mx-auto px-4">
+          <nav className="text-sm text-gray-500">
+            <ol className="flex items-center space-x-1">
+              <li><Link to="/" className="hover:text-brand-green">Home</Link></li>
+              <li className="flex items-center space-x-1">
+                <span>/</span>
+                <span className="text-gray-900">Jobs</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
       
-      <main className="flex-grow bg-gray-50">
-        {/* Breadcrumb */}
-        <div className="bg-white py-2 shadow-sm">
-          <div className="container mx-auto px-4">
-            <nav className="text-sm text-gray-500">
-              <ol className="flex items-center space-x-1">
-                <li><Link to="/" className="hover:text-brand-green">Home</Link></li>
-                <li className="flex items-center space-x-1">
-                  <span>/</span>
-                  <span className="text-gray-900">Jobs</span>
-                </li>
-              </ol>
-            </nav>
-          </div>
+      <div className="container mx-auto px-4 py-6">
+        {/* Category Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Jobs</h1>
+          <p className="text-gray-600 mb-0">
+            Find job opportunities across various sectors in Ethiopia. Browse listings, apply for positions, and advance your career.
+          </p>
         </div>
         
-        <div className="container mx-auto px-4 py-6">
-          {/* Category Header */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Jobs</h1>
-            <p className="text-gray-600 mb-0">
-              Find job opportunities across various sectors in Ethiopia. Browse listings, apply for positions, and advance your career.
-            </p>
+        {/* Search and Filters */}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Input
+                type="text"
+                placeholder="Search job title or company"
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="w-full md:w-48">
+              <Select value={jobType} onValueChange={setJobType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Job Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Job Types</SelectItem>
+                  <SelectItem value="full-time">Full-Time</SelectItem>
+                  <SelectItem value="part-time">Part-Time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="internship">Internship</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full md:w-48">
+              <Select value={location} onValueChange={setLocation}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="addis">Addis Ababa</SelectItem>
+                  <SelectItem value="adama">Adama</SelectItem>
+                  <SelectItem value="hawassa">Hawassa</SelectItem>
+                  <SelectItem value="bahirdar">Bahir Dar</SelectItem>
+                  <SelectItem value="mekelle">Mekelle</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button>Search</Button>
           </div>
           
-          {/* Search and Filters */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  type="text"
-                  placeholder="Search job title or company"
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="w-full md:w-48">
-                <Select value={jobType} onValueChange={setJobType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Job Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Job Types</SelectItem>
-                    <SelectItem value="full-time">Full-Time</SelectItem>
-                    <SelectItem value="part-time">Part-Time</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="internship">Internship</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-full md:w-48">
-                <Select value={location} onValueChange={setLocation}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    <SelectItem value="addis">Addis Ababa</SelectItem>
-                    <SelectItem value="adama">Adama</SelectItem>
-                    <SelectItem value="hawassa">Hawassa</SelectItem>
-                    <SelectItem value="bahirdar">Bahir Dar</SelectItem>
-                    <SelectItem value="mekelle">Mekelle</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button>Search</Button>
-            </div>
-            
-            <div className="mt-4 flex items-center">
-              <Button variant="ghost" className="text-sm" onClick={() => setShowFilters(!showFilters)}>
-                <Filter className="h-4 w-4 mr-1" />
-                More Filters
-                <ChevronDown className={`h-4 w-4 ml-1 transform ${showFilters ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-            
-            {showFilters && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Experience Level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any Experience</SelectItem>
-                    <SelectItem value="entry">Entry Level</SelectItem>
-                    <SelectItem value="mid">Mid Level</SelectItem>
-                    <SelectItem value="senior">Senior Level</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Education" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any Education</SelectItem>
-                    <SelectItem value="high-school">High School</SelectItem>
-                    <SelectItem value="bachelors">Bachelor's Degree</SelectItem>
-                    <SelectItem value="masters">Master's Degree</SelectItem>
-                    <SelectItem value="phd">PhD</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Salary Range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any Salary</SelectItem>
-                    <SelectItem value="10k-20k">10,000 - 20,000 ETB</SelectItem>
-                    <SelectItem value="20k-30k">20,000 - 30,000 ETB</SelectItem>
-                    <SelectItem value="30k-50k">30,000 - 50,000 ETB</SelectItem>
-                    <SelectItem value="50k+">50,000+ ETB</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+          <div className="mt-4 flex items-center">
+            <Button variant="ghost" className="text-sm" onClick={() => setShowFilters(!showFilters)}>
+              <Filter className="h-4 w-4 mr-1" />
+              More Filters
+              <ChevronDown className={`h-4 w-4 ml-1 transform ${showFilters ? 'rotate-180' : ''}`} />
+            </Button>
           </div>
           
-          <div className="grid grid-cols-1 gap-6">
-            {/* Job Listings */}
-            <div>
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold">
-                  {JOBS.length} Jobs Found
-                </h2>
-              </div>
+          {showFilters && (
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Experience Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any Experience</SelectItem>
+                  <SelectItem value="entry">Entry Level</SelectItem>
+                  <SelectItem value="mid">Mid Level</SelectItem>
+                  <SelectItem value="senior">Senior Level</SelectItem>
+                </SelectContent>
+              </Select>
               
-              {JOBS.map(job => (
-                <JobCard 
-                  key={job.id} 
-                  job={job}
-                  onClick={() => setSelectedJob(job)}
-                />
-              ))}
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Education" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any Education</SelectItem>
+                  <SelectItem value="high-school">High School</SelectItem>
+                  <SelectItem value="bachelors">Bachelor's Degree</SelectItem>
+                  <SelectItem value="masters">Master's Degree</SelectItem>
+                  <SelectItem value="phd">PhD</SelectItem>
+                </SelectContent>
+              </Select>
               
-              {/* Pagination */}
-              <div className="mt-8">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Salary Range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any Salary</SelectItem>
+                  <SelectItem value="10k-20k">10,000 - 20,000 ETB</SelectItem>
+                  <SelectItem value="20k-30k">20,000 - 30,000 ETB</SelectItem>
+                  <SelectItem value="30k-50k">30,000 - 50,000 ETB</SelectItem>
+                  <SelectItem value="50k+">50,000+ ETB</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+        
+        <div className="grid grid-cols-1 gap-6">
+          {/* Job Listings */}
+          <div>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold">
+                {JOBS.length} Jobs Found
+              </h2>
+            </div>
+            
+            {JOBS.map(job => (
+              <JobCard 
+                key={job.id} 
+                job={job}
+                onClick={() => setSelectedJob(job)}
+              />
+            ))}
+            
+            {/* Pagination */}
+            <div className="mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious href="#" />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#" isActive>1</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#">2</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#">3</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext href="#" />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
           </div>
         </div>
-        
-        {selectedJob && <JobDetailModal job={selectedJob} onClose={() => setSelectedJob(null)} />}
-      </main>
+      </div>
       
-      <Footer />
+      {selectedJob && <JobDetailModal job={selectedJob} onClose={() => setSelectedJob(null)} />}
     </div>
   );
 };

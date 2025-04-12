@@ -2,8 +2,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { useAuth as useAuthContext } from '@/contexts/AuthContext';
 
-export function useAuth() {
+// Re-export the context hook to avoid confusion
+export const useAuth = useAuthContext;
+
+// This is a standalone hook for components that don't have access to the context
+export function useAuthState() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -79,4 +84,4 @@ export function useAuth() {
     signOut,
     resetPassword,
   };
-} 
+}
