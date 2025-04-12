@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,6 +39,7 @@ import Others from "./pages/categories/Others";
 import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabase';
 
+// Create QueryClient instance outside of the component
 const queryClient = new QueryClient();
 
 // Admin route guard component
@@ -75,85 +77,87 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   return isAdmin ? <>{children}</> : <Navigate to="/login" />;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => {
+  return (
     <BrowserRouter>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/verification-pending" element={<VerificationPending />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/category/:categoryId" element={<Category />} />
-            <Route path="/category/:categoryId/:subcategoryId" element={<Category />} />
-            <Route path="/sell" element={<SellProduct />} />
-            
-            {/* Category Pages */}
-            <Route path="/pages/categories/Fashion" element={<Fashion />} />
-            <Route path="/pages/categories/Home" element={<Home />} />
-            <Route path="/pages/categories/Jobs" element={<Jobs />} />
-            <Route path="/pages/categories/Services" element={<Services />} />
-            <Route path="/pages/categories/Others" element={<Others />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={
-              <AuthGuard requiredRole="admin">
-                <AdminDashboard />
-              </AuthGuard>
-            } />
-            <Route path="/admin/products" element={
-              <AuthGuard requiredRole="admin">
-                <ProductsManagement />
-              </AuthGuard>
-            } />
-            <Route path="/admin/categories" element={
-              <AuthGuard requiredRole="admin">
-                <CategoriesManagement />
-              </AuthGuard>
-            } />
-            <Route path="/admin/orders" element={
-              <AuthGuard requiredRole="admin">
-                <OrdersManagement />
-              </AuthGuard>
-            } />
-            <Route path="/admin/customers" element={
-              <AuthGuard requiredRole="admin">
-                <CustomersManagement />
-              </AuthGuard>
-            } />
-            <Route path="/admin/reviews" element={
-              <AuthGuard requiredRole="admin">
-                <ReviewsManagement />
-              </AuthGuard>
-            } />
-            <Route path="/admin/analytics" element={
-              <AuthGuard requiredRole="admin">
-                <Analytics />
-              </AuthGuard>
-            } />
-            <Route path="/admin/settings" element={
-              <AuthGuard requiredRole="admin">
-                <Settings />
-              </AuthGuard>
-            } />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="/create-test-user" element={<CreateTestUser />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verification-pending" element={<VerificationPending />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/category/:categoryId" element={<Category />} />
+              <Route path="/category/:categoryId/:subcategoryId" element={<Category />} />
+              <Route path="/sell" element={<SellProduct />} />
+              
+              {/* Category Pages */}
+              <Route path="/pages/categories/Fashion" element={<Fashion />} />
+              <Route path="/pages/categories/Home" element={<Home />} />
+              <Route path="/pages/categories/Jobs" element={<Jobs />} />
+              <Route path="/pages/categories/Services" element={<Services />} />
+              <Route path="/pages/categories/Others" element={<Others />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={
+                <AuthGuard requiredRole="admin">
+                  <AdminDashboard />
+                </AuthGuard>
+              } />
+              <Route path="/admin/products" element={
+                <AuthGuard requiredRole="admin">
+                  <ProductsManagement />
+                </AuthGuard>
+              } />
+              <Route path="/admin/categories" element={
+                <AuthGuard requiredRole="admin">
+                  <CategoriesManagement />
+                </AuthGuard>
+              } />
+              <Route path="/admin/orders" element={
+                <AuthGuard requiredRole="admin">
+                  <OrdersManagement />
+                </AuthGuard>
+              } />
+              <Route path="/admin/customers" element={
+                <AuthGuard requiredRole="admin">
+                  <CustomersManagement />
+                </AuthGuard>
+              } />
+              <Route path="/admin/reviews" element={
+                <AuthGuard requiredRole="admin">
+                  <ReviewsManagement />
+                </AuthGuard>
+              } />
+              <Route path="/admin/analytics" element={
+                <AuthGuard requiredRole="admin">
+                  <Analytics />
+                </AuthGuard>
+              } />
+              <Route path="/admin/settings" element={
+                <AuthGuard requiredRole="admin">
+                  <Settings />
+                </AuthGuard>
+              } />
+              
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/create-test-user" element={<CreateTestUser />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TooltipProvider>
+        </QueryClientProvider>
       </AuthProvider>
     </BrowserRouter>
-  </QueryClientProvider>
-);
+  );
+};
 
 export default App;
