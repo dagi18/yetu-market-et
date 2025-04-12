@@ -51,11 +51,15 @@ export const router = createBrowserRouter([
     element: <Layout><Products /></Layout>,
   },
   {
-    path: '/products/:id',
+    path: '/product/:id',
     element: <Layout><ProductDetail /></Layout>,
   },
   {
-    path: '/categories/:id',
+    path: '/category/:id',
+    element: <Layout><Category /></Layout>,
+  },
+  {
+    path: '/category/:id/:subcategoryId',
     element: <Layout><Category /></Layout>,
   },
   {
