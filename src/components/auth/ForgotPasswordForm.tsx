@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthState } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ export function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { resetPassword } = useAuth();
+  const { resetPassword } = useAuthState();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {

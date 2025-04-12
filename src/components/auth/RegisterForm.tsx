@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthState } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ export function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp } = useAuthState();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {

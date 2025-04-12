@@ -8,6 +8,7 @@ import { useAuth as useAuthContext } from '@/contexts/AuthContext';
 export const useAuth = useAuthContext;
 
 // This is a standalone hook for components that don't have access to the context
+// or need additional auth methods not provided by the context
 export function useAuthState() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);

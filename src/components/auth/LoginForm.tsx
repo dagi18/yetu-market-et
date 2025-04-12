@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthState } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn } = useAuthState();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
