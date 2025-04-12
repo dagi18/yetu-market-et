@@ -16,8 +16,43 @@ import { Separator } from "@/components/ui/separator";
 import ProductCard from "@/components/ProductCard";
 import CategoryNav from "@/components/categories/CategoryNav";
 
+// Define proper TypeScript interfaces for the data
+interface SubCategory {
+  id: string;
+  name: string;
+  count: number;
+}
+
+interface FilterOption {
+  value: string;
+  label: string;
+  count: number;
+}
+
+interface Filter {
+  name: string;
+  options: FilterOption[];
+}
+
+interface CategoryData {
+  name: string;
+  icon: string;
+  description: string;
+  subcategories: SubCategory[];
+  filters?: Filter[];
+}
+
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+  location: string;
+  imageUrl: string;
+  date: string;
+}
+
 // Mock data for categories with filters
-const categories = {
+const categories: Record<string, CategoryData> = {
   "electronics": {
     name: "Electronics",
     icon: "smartphone",
@@ -107,7 +142,7 @@ const categories = {
 };
 
 // Mock products data
-const products = Array(24).fill(null).map((_, index) => ({
+const products: Product[] = Array(24).fill(null).map((_, index) => ({
   id: `product-${index + 1}`,
   title: `Example Product ${index + 1}`,
   price: Math.floor(Math.random() * 20000) + 1000,
@@ -123,7 +158,7 @@ const Category = () => {
   const [priceRange, setPriceRange] = useState([0, 50000]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   
-  const categoryData = categoryId ? categories[categoryId as keyof typeof categories] : null;
+  const categoryData = categoryId && categories[categoryId] ? categories[categoryId] : null;
   const subcategoryName = subcategoryId && categoryData ? 
     categoryData.subcategories.find(sub => sub.id === subcategoryId)?.name : 
     null;
@@ -212,7 +247,7 @@ const Category = () => {
               )}
               
               {/* Filters Section */}
-              {categoryData && 'filters' in categoryData && categoryData.filters && (
+              {categoryData && categoryData.filters && (
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Filters</h3>
                   <div className="space-y-6">
@@ -329,7 +364,7 @@ const Category = () => {
                       </div>
                       
                       {/* Dynamic Filters Based on Category */}
-                      {categoryData && 'filters' in categoryData && categoryData.filters && categoryData.filters.map((filter) => (
+                      {categoryData && categoryData.filters && categoryData.filters.map((filter) => (
                         <div key={filter.name}>
                           <h4 className="font-medium mb-3">{filter.name}</h4>
                           <div className="space-y-2">
