@@ -1,4 +1,4 @@
-
+import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
@@ -7,11 +7,42 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import RecentProducts from "@/components/RecentProducts";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, MessageCircle, ThumbsUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 
 const Index = () => {
+  const { user, signOut } = useAuth();
+  const [profile, setProfile] = useState<{ full_name: string; email: string; is_admin: boolean } | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('full_name, email, is_admin')
+          .eq('id', user.id)
+          .single();
+
+        if (!error && data) {
+          setProfile(data);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header 
+        user={profile ? {
+          id: user?.id || '',
+          email: profile.email,
+          full_name: profile.full_name,
+          is_admin: profile.is_admin
+        } : null} 
+        onSignOut={signOut}
+      />
       
       <main className="flex-grow">
         <HeroSection />
@@ -22,40 +53,29 @@ const Index = () => {
           <FeaturedProducts />
           
           {/* Why YetuMarket Section */}
-          <section className="py-12 bg-gray-50 my-8 rounded-lg">
-            <div className="container mx-auto px-4">
-              <h2 className="text-2xl font-bold text-center mb-10">Why Choose YetuMarket?</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="flex flex-col items-center text-center p-4">
-                  <div className="w-16 h-16 mb-4 rounded-full bg-brand-green/10 flex items-center justify-center">
-                    <ShieldCheck className="h-8 w-8 text-brand-green" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Secure Trading</h3>
-                  <p className="text-gray-600">
-                    Buy and sell with confidence with our secure trading platform designed for Ethiopian market.
-                  </p>
+          <section className="py-12">
+            <h2 className="text-3xl font-bold text-center mb-12">Why Choose YetuMarket?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShieldCheck className="h-8 w-8 text-green-600" />
                 </div>
-                
-                <div className="flex flex-col items-center text-center p-4">
-                  <div className="w-16 h-16 mb-4 rounded-full bg-brand-green/10 flex items-center justify-center">
-                    <MessageCircle className="h-8 w-8 text-brand-green" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Direct Communication</h3>
-                  <p className="text-gray-600">
-                    Chat directly with sellers and buyers to negotiate and arrange meetings with ease.
-                  </p>
+                <h3 className="text-xl font-semibold mb-2">Secure Trading</h3>
+                <p className="text-gray-600">Your transactions are protected with our secure payment system.</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="h-8 w-8 text-green-600" />
                 </div>
-                
-                <div className="flex flex-col items-center text-center p-4">
-                  <div className="w-16 h-16 mb-4 rounded-full bg-brand-green/10 flex items-center justify-center">
-                    <ThumbsUp className="h-8 w-8 text-brand-green" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Verified Users</h3>
-                  <p className="text-gray-600">
-                    User verification and ratings system to ensure trust between parties for safer transactions.
-                  </p>
+                <h3 className="text-xl font-semibold mb-2">Direct Communication</h3>
+                <p className="text-gray-600">Connect directly with sellers for better deals and information.</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ThumbsUp className="h-8 w-8 text-green-600" />
                 </div>
+                <h3 className="text-xl font-semibold mb-2">Quality Products</h3>
+                <p className="text-gray-600">All listings are verified to ensure quality and authenticity.</p>
               </div>
             </div>
           </section>

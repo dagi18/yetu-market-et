@@ -1,6 +1,6 @@
-
 import { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -14,56 +14,47 @@ const AuthGuard = ({ children, requiredRole = 'user' }: AuthGuardProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    const checkAuth = () => {
-      // Check for admin authentication if admin role is required
-      if (requiredRole === 'admin') {
-        const adminAuth = localStorage.getItem('adminAuth');
-        if (adminAuth) {
-          try {
-            const parsedAuth = JSON.parse(adminAuth);
-            if (parsedAuth.isAdmin) {
-              setIsAuthenticated(true);
-              setIsLoading(false);
-              return;
-            }
-          } catch (error) {
-            console.error('Error parsing admin auth data:', error);
-          }
-        }
-        
-        // If not authenticated as admin, redirect to admin login
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        navigate('/admin/login', { state: { from: location } });
-      } 
-      // Check for user authentication if user role is required
-      else {
-        const userAuth = localStorage.getItem('userAuth');
-        if (userAuth) {
-          try {
-            const parsedAuth = JSON.parse(userAuth);
-            if (parsedAuth.isAuth) {
-              setIsAuthenticated(true);
-              setIsLoading(false);
-              return;
-            }
-          } catch (error) {
-            console.error('Error parsing user auth data:', error);
-          }
-        }
-        
-        // If not authenticated as user, redirect to regular login
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
         setIsAuthenticated(false);
         setIsLoading(false);
         navigate('/login', { state: { from: location } });
+        return;
       }
+
+      // Get user profile from the users table
+      const { data: profile, error: profileError } = await supabase
+        .from('users')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching user profile:', profileError);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        navigate('/login', { state: { from: location } });
+        return;
+      }
+
+      // Check if user has required role
+      if (requiredRole === 'admin' && !profile?.is_admin) {
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        navigate('/', { state: { from: location } });
+        return;
+      }
+
+      setIsAuthenticated(true);
+      setIsLoading(false);
     };
 
     checkAuth();
   }, [navigate, location, requiredRole]);
 
   if (isLoading) {
-    // You could replace this with a proper loading component
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green"></div>
