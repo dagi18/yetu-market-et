@@ -10,6 +10,11 @@ import ProductDetail from '@/pages/ProductDetail';
 import SellProduct from '@/pages/SellProduct';
 import Category from '@/pages/Category';
 import NotFound from '@/pages/NotFound';
+import Fashion from '@/pages/categories/Fashion';
+import Home from '@/pages/categories/Home';
+import Jobs from '@/pages/categories/Jobs';
+import Services from '@/pages/categories/Services';
+import Others from '@/pages/categories/Others';
 
 // Protected Route Wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -61,6 +66,26 @@ export const router = createBrowserRouter([
   {
     path: '/category/:id/:subcategoryId',
     element: <Layout><Category /></Layout>,
+  },
+  {
+    path: '/pages/categories/Fashion',
+    element: <Layout><Fashion /></Layout>,
+  },
+  {
+    path: '/pages/categories/Home',
+    element: <Layout><Home /></Layout>,
+  },
+  {
+    path: '/pages/categories/Jobs',
+    element: <Layout><Jobs /></Layout>,
+  },
+  {
+    path: '/pages/categories/Services',
+    element: <Layout><Services /></Layout>,
+  },
+  {
+    path: '/pages/categories/Others',
+    element: <Layout><Others /></Layout>,
   },
   {
     path: '/sell',

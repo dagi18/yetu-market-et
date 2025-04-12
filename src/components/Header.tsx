@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,30 +33,6 @@ export default function Header({ user, onSignOut }: HeaderProps) {
               <span className="text-orange-500">Market</span>
             </span>
           </Link>
-
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            <Link 
-              to="/products" 
-              className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors"
-            >
-              Products
-            </Link>
-            <Link 
-              to="/categories" 
-              className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors"
-            >
-              Categories
-            </Link>
-            {user && (
-              <Link 
-                to="/sell" 
-                className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors"
-              >
-                Sell
-              </Link>
-            )}
-          </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-4">
@@ -112,11 +89,8 @@ export default function Header({ user, onSignOut }: HeaderProps) {
               </DropdownMenu>
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" asChild>
-                  <Link to="/login">Sign in</Link>
-                </Button>
                 <Button asChild>
-                  <Link to="/register">Sign up</Link>
+                  <Link to="/login">Sign in</Link>
                 </Button>
               </div>
             )}

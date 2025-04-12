@@ -17,14 +17,14 @@ const CategoryNav = () => {
   return (
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between overflow-x-auto py-1 scrollbar-hide md:justify-center">
+        <div className="flex items-center overflow-x-auto py-3 scrollbar-hide md:justify-center">
           {categories.map((category, index) => (
             <Link
               key={index}
               to={category.link}
-              className="flex min-w-max flex-col items-center py-2 px-3 text-sm font-medium text-gray-700 hover:text-brand-green"
+              className="flex min-w-max flex-col items-center px-4 text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
             >
-              <span className="mb-1">{category.icon}</span>
+              <span className="mb-1 bg-gray-50 p-2 rounded-full">{category.icon}</span>
               <span>{category.name}</span>
             </Link>
           ))}
