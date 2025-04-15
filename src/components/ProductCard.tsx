@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
 import { Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 export interface ProductProps {
   id: string;
@@ -31,52 +32,58 @@ const ProductCard = ({ id, title, price, location, imageUrl, date, isFeatured = 
   };
   
   return (
-    <Link to={`/product/${id}`}>
-      <Card className="product-card overflow-hidden h-full hover:shadow-lg transition-all duration-300 border-0">
-        {/* Product Image */}
-        <div className="relative h-48 overflow-hidden">
-          <img 
-            src={imageUrl} 
-            alt={title} 
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-          />
-          
-          {/* Favorite Button */}
-          <button 
-            className="absolute top-2 right-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm"
-            onClick={toggleFavorite}
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Heart 
-              className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'} transition-colors`}
+    <motion.div
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Link to={`/product/${id}`}>
+        <Card className="product-card overflow-hidden h-full hover:shadow-xl transition-all duration-300 border-0">
+          {/* Product Image */}
+          <div className="relative h-48 overflow-hidden">
+            <img 
+              src={imageUrl} 
+              alt={title} 
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             />
-          </button>
-          
-          {/* Featured Tag */}
-          {isFeatured && (
-            <span className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-medium px-2 py-1 rounded-md shadow-sm">
-              Featured
-            </span>
-          )}
-        </div>
-        
-        {/* Product Details */}
-        <div className="p-4">
-          <h3 className="font-medium text-gray-900 line-clamp-2 min-h-[48px]">{title}</h3>
-          
-          <div className="mt-2">
-            <span className="font-bold text-green-600 text-lg">
-              {price.toLocaleString()} ETB
-            </span>
+            
+            {/* Favorite Button */}
+            <motion.button 
+              className="absolute top-2 right-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm"
+              onClick={toggleFavorite}
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Heart 
+                className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'} transition-colors`}
+              />
+            </motion.button>
+            
+            {/* Featured Tag */}
+            {isFeatured && (
+              <span className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-medium px-2 py-1 rounded-md shadow-sm">
+                Featured
+              </span>
+            )}
           </div>
           
-          <div className="mt-3 flex justify-between text-xs text-gray-500">
-            <span>{location}</span>
-            <span>{date}</span>
+          {/* Product Details */}
+          <div className="p-4">
+            <h3 className="font-medium text-gray-900 line-clamp-2 min-h-[48px]">{title}</h3>
+            
+            <div className="mt-2">
+              <span className="font-bold text-green-600 text-lg">
+                {price.toLocaleString()} ETB
+              </span>
+            </div>
+            
+            <div className="mt-3 flex justify-between text-xs text-gray-500">
+              <span>{location}</span>
+              <span>{date}</span>
+            </div>
           </div>
-        </div>
-      </Card>
-    </Link>
+        </Card>
+      </Link>
+    </motion.div>
   );
 };
 

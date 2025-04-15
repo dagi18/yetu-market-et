@@ -71,6 +71,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   };
 
+  const contentVariants = {
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -110,10 +116,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={window.location.pathname}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={contentVariants}
                 transition={{ duration: 0.3 }}
+                className="h-full"
               >
                 {children}
               </motion.div>
