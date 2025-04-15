@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { User, ChevronDown, ShoppingCart, Heart, Search } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface HeaderProps {
   user: {
@@ -26,6 +27,16 @@ interface HeaderProps {
 export default function Header({ user, onSignOut }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Set search query from URL parameters if they exist
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get('search');
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    }
+  }, [location.search]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +46,7 @@ export default function Header({ user, onSignOut }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white">
+    <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -45,6 +56,25 @@ export default function Header({ user, onSignOut }: HeaderProps) {
               <span className="text-orange-500">Market</span>
             </span>
           </Link>
+
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link to="/products" className="text-gray-700 hover:text-green-600 text-sm font-medium">
+              All Products
+            </Link>
+            <Link to="/pages/categories/Fashion" className="text-gray-700 hover:text-green-600 text-sm font-medium">
+              Fashion
+            </Link>
+            <Link to="/pages/categories/Home" className="text-gray-700 hover:text-green-600 text-sm font-medium">
+              Home
+            </Link>
+            <Link to="/pages/categories/Services" className="text-gray-700 hover:text-green-600 text-sm font-medium">
+              Services
+            </Link>
+            <Link to="/sell" className="text-green-600 hover:text-green-700 text-sm font-medium">
+              Sell
+            </Link>
+          </nav>
 
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
@@ -110,7 +140,7 @@ export default function Header({ user, onSignOut }: HeaderProps) {
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link to="/admin">Admin Dashboard</Link>
+                        <Link to="/admin/dashboard">Admin Dashboard</Link>
                       </DropdownMenuItem>
                     </>
                   )}

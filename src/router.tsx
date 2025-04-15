@@ -21,6 +21,17 @@ import Jobs from '@/pages/categories/Jobs';
 import Services from '@/pages/categories/Services';
 import Others from '@/pages/categories/Others';
 
+// Admin pages
+import Dashboard from '@/pages/admin/Dashboard';
+import ProductsManagement from '@/pages/admin/ProductsManagement';
+import CategoriesManagement from '@/pages/admin/CategoriesManagement';
+import OrdersManagement from '@/pages/admin/OrdersManagement';
+import CustomersManagement from '@/pages/admin/CustomersManagement';
+import ReviewsManagement from '@/pages/admin/ReviewsManagement';
+import Analytics from '@/pages/admin/Analytics';
+import Settings from '@/pages/admin/Settings';
+import AdminLogin from '@/pages/admin/Login';
+
 // Protected Route Wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -155,6 +166,43 @@ export const router = createBrowserRouter([
         <ForgotPasswordForm />
       </AuthRoute>
     ),
+  },
+  // Admin Routes
+  {
+    path: '/admin/login',
+    element: <AdminLogin />,
+  },
+  {
+    path: '/admin/dashboard',
+    element: <Dashboard />,
+  },
+  {
+    path: '/admin/products',
+    element: <ProductsManagement />,
+  },
+  {
+    path: '/admin/categories',
+    element: <CategoriesManagement />,
+  },
+  {
+    path: '/admin/orders',
+    element: <OrdersManagement />,
+  },
+  {
+    path: '/admin/customers',
+    element: <CustomersManagement />,
+  },
+  {
+    path: '/admin/reviews',
+    element: <ReviewsManagement />,
+  },
+  {
+    path: '/admin/analytics',
+    element: <Analytics />,
+  },
+  {
+    path: '/admin/settings',
+    element: <Settings />,
   },
   {
     path: '*',

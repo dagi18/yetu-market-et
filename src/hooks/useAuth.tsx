@@ -29,11 +29,14 @@ export function useAuthState() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, userData?: Record<string, any>) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: userData,
+        }
       });
       if (error) throw error;
       return data;
@@ -69,10 +72,24 @@ export function useAuthState() {
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
       if (error) throw error;
     } catch (error) {
       console.error('Error resetting password:', error);
+      throw error;
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error updating password:', error);
       throw error;
     }
   };
@@ -84,5 +101,6 @@ export function useAuthState() {
     signIn,
     signOut,
     resetPassword,
+    updatePassword
   };
 }

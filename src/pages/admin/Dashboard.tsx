@@ -1,12 +1,13 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  Users, Package, ShoppingCart, TrendingUp, 
-  ArrowUpRight, ArrowDownRight, DollarSign,
-  Box, UserCheck, ShoppingBag, Activity
+  Users, ShoppingBag, DollarSign, Box, 
+  ArrowUpRight, ArrowDownRight, User, Activity,
+  UserCheck
 } from 'lucide-react';
 import {
   Select,
@@ -35,7 +36,6 @@ export default function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ full_name: string; email: string; is_admin: boolean } | null>(null);
-  const [isSideNavCollapsed, setIsSideNavCollapsed] = useState(false);
   const [stats, setStats] = useState({
     revenue: { value: 1245300, change: 12.5 },
     products: { value: 2584, change: 5.3 },
@@ -170,279 +170,218 @@ export default function Dashboard() {
     return null;
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <AdminLayout>
       <div className="max-w-[1600px] mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <motion.h1 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-3xl font-bold text-gray-900"
-            >
-              Dashboard
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-gray-500 mt-1"
-            >
-              Welcome back, {profile?.full_name}
-            </motion.p>
+        <motion.div 
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="space-y-8"
+        >
+          <div className="flex justify-between items-center">
+            <motion.div variants={itemVariants}>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Dashboard
+              </h1>
+              <p className="text-gray-500 mt-1">
+                Welcome back, {profile?.full_name}
+              </p>
+            </motion.div>
+            <motion.div variants={itemVariants} className="flex items-center gap-4">
+              <Select defaultValue="today">
+                <SelectTrigger className="w-[180px] bg-white">
+                  <SelectValue placeholder="Select period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="year">This Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </motion.div>
           </div>
+
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex items-center gap-4"
+            variants={itemVariants}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            <Select defaultValue="today">
-              <SelectTrigger className="w-[180px] bg-white">
-                <SelectValue placeholder="Select period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="year">This Year</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Revenue Card */}
+            <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-br from-green-50 to-emerald-50 flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
+                <div className="p-2 bg-green-500/10 rounded-full">
+                  <DollarSign className="h-4 w-4 text-green-600" />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="text-2xl font-bold text-gray-900">ETB {stats.revenue.value.toLocaleString()}</div>
+                <div className="flex items-center mt-1">
+                  <ArrowUpRight className="h-4 w-4 text-green-600 mr-1" />
+                  <span className="text-sm font-medium text-green-600">{stats.revenue.change}%</span>
+                  <span className="text-sm text-gray-500 ml-1">vs last month</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Products Card */}
+            <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">Total Products</CardTitle>
+                <div className="p-2 bg-blue-500/10 rounded-full">
+                  <Box className="h-4 w-4 text-blue-600" />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="text-2xl font-bold text-gray-900">{stats.products.value.toLocaleString()}</div>
+                <div className="flex items-center mt-1">
+                  <ArrowUpRight className="h-4 w-4 text-blue-600 mr-1" />
+                  <span className="text-sm font-medium text-blue-600">{stats.products.change}%</span>
+                  <span className="text-sm text-gray-500 ml-1">vs last month</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Orders Card */}
+            <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-br from-orange-50 to-amber-50 flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">Total Orders</CardTitle>
+                <div className="p-2 bg-orange-500/10 rounded-full">
+                  <ShoppingBag className="h-4 w-4 text-orange-600" />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="text-2xl font-bold text-gray-900">{stats.orders.value.toLocaleString()}</div>
+                <div className="flex items-center mt-1">
+                  <ArrowDownRight className="h-4 w-4 text-red-600 mr-1" />
+                  <span className="text-sm font-medium text-red-600">{Math.abs(stats.orders.change)}%</span>
+                  <span className="text-sm text-gray-500 ml-1">vs last month</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Users Card */}
+            <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-br from-purple-50 to-fuchsia-50 flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
+                <div className="p-2 bg-purple-500/10 rounded-full">
+                  <UserCheck className="h-4 w-4 text-purple-600" />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="text-2xl font-bold text-gray-900">{stats.users.value.toLocaleString()}</div>
+                <div className="flex items-center mt-1">
+                  <ArrowUpRight className="h-4 w-4 text-purple-600 mr-1" />
+                  <span className="text-sm font-medium text-purple-600">{stats.users.change}%</span>
+                  <span className="text-sm text-gray-500 ml-1">vs last month</span>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-        >
-          {/* Revenue Card */}
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
-              <div className="p-2 bg-green-500/10 rounded-full">
-                <DollarSign className="h-4 w-4 text-green-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">ETB {stats.revenue.value.toLocaleString()}</div>
-              <div className="flex items-center mt-1">
-                <ArrowUpRight className="h-4 w-4 text-green-600 mr-1" />
-                <span className="text-sm font-medium text-green-600">{stats.revenue.change}%</span>
-                <span className="text-sm text-gray-500 ml-1">vs last month</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Products Card */}
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Products</CardTitle>
-              <div className="p-2 bg-blue-500/10 rounded-full">
-                <Box className="h-4 w-4 text-blue-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats.products.value.toLocaleString()}</div>
-              <div className="flex items-center mt-1">
-                <ArrowUpRight className="h-4 w-4 text-blue-600 mr-1" />
-                <span className="text-sm font-medium text-blue-600">{stats.products.change}%</span>
-                <span className="text-sm text-gray-500 ml-1">vs last month</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Orders Card */}
-          <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Orders</CardTitle>
-              <div className="p-2 bg-orange-500/10 rounded-full">
-                <ShoppingBag className="h-4 w-4 text-orange-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats.orders.value.toLocaleString()}</div>
-              <div className="flex items-center mt-1">
-                <ArrowDownRight className="h-4 w-4 text-red-600 mr-1" />
-                <span className="text-sm font-medium text-red-600">{Math.abs(stats.orders.change)}%</span>
-                <span className="text-sm text-gray-500 ml-1">vs last month</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Users Card */}
-          <Card className="bg-gradient-to-br from-purple-50 to-fuchsia-50 border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
-              <div className="p-2 bg-purple-500/10 rounded-full">
-                <UserCheck className="h-4 w-4 text-purple-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats.users.value.toLocaleString()}</div>
-              <div className="flex items-center mt-1">
-                <ArrowUpRight className="h-4 w-4 text-purple-600 mr-1" />
-                <span className="text-sm font-medium text-purple-600">{stats.users.change}%</span>
-                <span className="text-sm text-gray-500 ml-1">vs last month</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Charts Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
-        >
-          <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-semibold text-gray-900">Revenue Overview</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">Monthly revenue statistics</p>
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-semibold text-gray-900">Recent Products</CardTitle>
+                    <p className="text-sm text-gray-500 mt-1">Latest product listings</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="bg-white">View All</Button>
                 </div>
-                <Select defaultValue="last30">
-                  <SelectTrigger className="w-[180px] bg-white">
-                    <SelectValue placeholder="Select period" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="last30">Last 30 Days</SelectItem>
-                    <SelectItem value="last60">Last 60 Days</SelectItem>
-                    <SelectItem value="last90">Last 90 Days</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[350px] flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-lg">
-                <Activity className="h-12 w-12 text-gray-300" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-semibold text-gray-900">User Activity</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">User engagement metrics</p>
-                </div>
-                <Select defaultValue="last30">
-                  <SelectTrigger className="w-[180px] bg-white">
-                    <SelectValue placeholder="Select period" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="last30">Last 30 Days</SelectItem>
-                    <SelectItem value="last60">Last 60 Days</SelectItem>
-                    <SelectItem value="last90">Last 90 Days</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[350px] flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-lg">
-                <Activity className="h-12 w-12 text-gray-300" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Tables Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-semibold text-gray-900">Recent Products</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">Latest product listings</p>
-                </div>
-                <Button variant="outline" size="sm" className="bg-white">View All</Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg overflow-hidden border border-gray-100">
-                <Table>
-                  <TableHeader className="bg-gray-50">
-                    <TableRow>
-                      <TableHead className="font-semibold">Name</TableHead>
-                      <TableHead className="font-semibold">Category</TableHead>
-                      <TableHead className="font-semibold">Price</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentProducts.map((product, index) => (
-                      <TableRow key={index} className="hover:bg-gray-50/50">
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.category}</TableCell>
-                        <TableCell>{product.price}</TableCell>
-                        <TableCell>
-                          <Badge className={cn(
-                            "px-2 py-1 rounded-full font-medium",
-                            getStatusBadgeVariant(product.status)
-                          )}>
-                            {product.status}
-                          </Badge>
-                        </TableCell>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg overflow-hidden border border-gray-100">
+                  <Table>
+                    <TableHeader className="bg-gray-50">
+                      <TableRow>
+                        <TableHead className="font-semibold">Name</TableHead>
+                        <TableHead className="font-semibold">Category</TableHead>
+                        <TableHead className="font-semibold">Price</TableHead>
+                        <TableHead className="font-semibold">Status</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-semibold text-gray-900">Recent Orders</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">Latest transactions</p>
+                    </TableHeader>
+                    <TableBody>
+                      {recentProducts.map((product, index) => (
+                        <TableRow key={index} className="hover:bg-gray-50/50">
+                          <TableCell className="font-medium">{product.name}</TableCell>
+                          <TableCell>{product.category}</TableCell>
+                          <TableCell>{product.price}</TableCell>
+                          <TableCell>
+                            <Badge className={cn(
+                              "px-2 py-1 rounded-full font-medium",
+                              getStatusBadgeVariant(product.status)
+                            )}>
+                              {product.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
-                <Button variant="outline" size="sm" className="bg-white">View All</Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg overflow-hidden border border-gray-100">
-                <Table>
-                  <TableHeader className="bg-gray-50">
-                    <TableRow>
-                      <TableHead className="font-semibold">Order ID</TableHead>
-                      <TableHead className="font-semibold">Customer</TableHead>
-                      <TableHead className="font-semibold">Amount</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentOrders.map((order, index) => (
-                      <TableRow key={index} className="hover:bg-gray-50/50">
-                        <TableCell className="font-medium">{order.orderId}</TableCell>
-                        <TableCell>{order.customer}</TableCell>
-                        <TableCell>{order.amount}</TableCell>
-                        <TableCell>
-                          <Badge className={cn(
-                            "px-2 py-1 rounded-full font-medium",
-                            getStatusBadgeVariant(order.status)
-                          )}>
-                            {order.status}
-                          </Badge>
-                        </TableCell>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-semibold text-gray-900">Recent Orders</CardTitle>
+                    <p className="text-sm text-gray-500 mt-1">Latest transactions</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="bg-white">View All</Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg overflow-hidden border border-gray-100">
+                  <Table>
+                    <TableHeader className="bg-gray-50">
+                      <TableRow>
+                        <TableHead className="font-semibold">Order ID</TableHead>
+                        <TableHead className="font-semibold">Customer</TableHead>
+                        <TableHead className="font-semibold">Amount</TableHead>
+                        <TableHead className="font-semibold">Status</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {recentOrders.map((order, index) => (
+                        <TableRow key={index} className="hover:bg-gray-50/50">
+                          <TableCell className="font-medium">{order.orderId}</TableCell>
+                          <TableCell>{order.customer}</TableCell>
+                          <TableCell>{order.amount}</TableCell>
+                          <TableCell>
+                            <Badge className={cn(
+                              "px-2 py-1 rounded-full font-medium",
+                              getStatusBadgeVariant(order.status)
+                            )}>
+                              {order.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </motion.div>
       </div>
     </AdminLayout>

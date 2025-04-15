@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import SideNav from '@/components/admin/SideNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { supabase } from '@/lib/supabase';
@@ -75,7 +75,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 mx-auto animate-spin text-brand-green" />
+          <Loader2 className="h-12 w-12 mx-auto animate-spin text-green-600" />
           <p className="mt-4 text-gray-600">Loading admin panel...</p>
         </div>
       </div>
@@ -91,24 +91,36 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         />
       </div>
       
-      <motion.div 
-        className="flex-1 transition-all duration-300"
-        initial={false}
-        animate={isSideNavCollapsed ? "collapsed" : "expanded"}
-        variants={containerVariants}
-      >
-        <div className="sticky top-0 z-40">
-          <AdminHeader 
-            onMenuClick={() => setIsSideNavCollapsed(!isSideNavCollapsed)}
-            user={user}
-            profile={profile}
-            onSignOut={signOut}
-          />
-        </div>
-        <main className="p-6 md:p-8">
-          {children}
-        </main>
-      </motion.div>
+      <AnimatePresence>
+        <motion.div 
+          className="flex-1 transition-all duration-300"
+          initial={false}
+          animate={isSideNavCollapsed ? "collapsed" : "expanded"}
+          variants={containerVariants}
+        >
+          <div className="sticky top-0 z-40">
+            <AdminHeader 
+              onMenuClick={() => setIsSideNavCollapsed(!isSideNavCollapsed)}
+              user={user}
+              profile={profile}
+              onSignOut={signOut}
+            />
+          </div>
+          <main className="p-6 md:p-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={window.location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
