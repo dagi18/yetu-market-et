@@ -13,7 +13,8 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { 
   User, Mail, Phone, MapPin, Shield, Bell, Lock, Globe, 
-  Camera, Briefcase, Calendar, Edit, CreditCard, LogOut 
+  Camera, Briefcase, Calendar, Edit, CreditCard, LogOut,
+  ShoppingCart
 } from "lucide-react";
 
 const Profile = () => {
