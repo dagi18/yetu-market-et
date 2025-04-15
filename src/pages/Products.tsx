@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronDown, Filter, Grid3X3, List } from "lucide-react";
+import { Check, ChevronDown, Filter, Grid3X3, List, Search } from "lucide-react";
 
 // Sample product data
 const PRODUCTS = [
@@ -78,11 +79,26 @@ const PRODUCTS = [
 
 const Products = () => {
   const [searchParams] = useSearchParams();
+  const urlSearch = searchParams.get("search") || "";
   const category = searchParams.get("category") || "all";
+  
+  const [searchQuery, setSearchQuery] = useState(urlSearch);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [priceRange, setPriceRange] = useState<number[]>([0, 300000]);
   const [sortBy, setSortBy] = useState("newest");
   const [itemsPerPage, setItemsPerPage] = useState("12");
+  
+  // Filter products based on search query
+  const filteredProducts = PRODUCTS.filter(product => {
+    if (!searchQuery.trim()) return true;
+    return product.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           product.location.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  // Update search state when URL search parameter changes
+  useEffect(() => {
+    setSearchQuery(urlSearch);
+  }, [urlSearch]);
   
   return (
     <div className="flex-grow bg-gray-50">
@@ -91,7 +107,7 @@ const Products = () => {
         <div className="container mx-auto px-4">
           <nav className="text-sm text-gray-500">
             <ol className="flex items-center space-x-1">
-              <li><a href="/" className="hover:text-brand-green">Home</a></li>
+              <li><Link to="/" className="hover:text-green-600">Home</Link></li>
               <li className="flex items-center space-x-1">
                 <span>/</span>
                 <span className="text-gray-900">{category === "all" ? "All Products" : category}</span>
@@ -102,6 +118,20 @@ const Products = () => {
       </div>
       
       <div className="container mx-auto px-4 py-6">
+        {/* Search bar for mobile and desktop */}
+        <div className="mb-4 lg:hidden">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input 
+              type="search"
+              placeholder="Search products..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+        
         {/* Filters and Sorting */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Filters */}
@@ -118,7 +148,7 @@ const Products = () => {
                       <label key={index} className="flex items-center gap-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-gray-300 text-brand-green focus:ring-brand-green"
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-600"
                           defaultChecked={index === 0}
                         />
                         <span className="text-sm">{cat}</span>
@@ -170,7 +200,7 @@ const Products = () => {
                       <label key={index} className="flex items-center gap-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-gray-300 text-brand-green focus:ring-brand-green"
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-600"
                           defaultChecked={index === 0}
                         />
                         <span className="text-sm">{condition}</span>
@@ -180,7 +210,7 @@ const Products = () => {
                 </div>
                 
                 {/* Apply Filters Button */}
-                <Button className="w-full">Apply Filters</Button>
+                <Button className="w-full bg-green-600 hover:bg-green-700">Apply Filters</Button>
               </div>
             </div>
           </div>
@@ -252,36 +282,55 @@ const Products = () => {
             </div>
             
             <div className="mb-4">
-              <p className="text-gray-600 text-sm">Showing <span className="font-medium">{PRODUCTS.length}</span> results</p>
+              <p className="text-gray-600 text-sm">
+                {searchQuery ? (
+                  <>Showing <span className="font-medium">{filteredProducts.length}</span> results for "<span className="font-medium">{searchQuery}</span>"</>
+                ) : (
+                  <>Showing <span className="font-medium">{filteredProducts.length}</span> results</>
+                )}
+              </p>
             </div>
             
-            <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-4`}>
-              {PRODUCTS.map(product => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
+            {filteredProducts.length === 0 ? (
+              <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+                <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold mb-2">No products found</h2>
+                <p className="text-gray-600 mb-6">
+                  We couldn't find any products matching "{searchQuery}".
+                </p>
+                <Button onClick={() => setSearchQuery("")}>Clear Search</Button>
+              </div>
+            ) : (
+              <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-4`}>
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} {...product} />
+                ))}
+              </div>
+            )}
             
-            <div className="mt-8">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious href="#" />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#" isActive>1</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">2</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">3</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext href="#" />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
+            {filteredProducts.length > 0 && (
+              <div className="mt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious href="#" />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#" isActive>1</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#">2</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#">3</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext href="#" />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         </div>
       </div>

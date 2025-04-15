@@ -25,13 +25,13 @@ const ProductCard = ({ id, title, price, location, imageUrl, date, isFeatured = 
   
   return (
     <Link to={`/product/${id}`}>
-      <Card className="product-card overflow-hidden h-full">
+      <Card className="product-card overflow-hidden h-full hover:shadow-md transition-all duration-200">
         {/* Product Image */}
         <div className="relative h-48 overflow-hidden">
           <img 
             src={imageUrl} 
             alt={title} 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
           
           {/* Favorite Button */}
@@ -46,7 +46,7 @@ const ProductCard = ({ id, title, price, location, imageUrl, date, isFeatured = 
           
           {/* Featured Tag */}
           {isFeatured && (
-            <span className="absolute top-2 left-2 bg-brand-orange text-white text-xs font-medium px-2 py-1 rounded">
+            <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-medium px-2 py-1 rounded">
               Featured
             </span>
           )}
@@ -54,10 +54,10 @@ const ProductCard = ({ id, title, price, location, imageUrl, date, isFeatured = 
         
         {/* Product Details */}
         <div className="p-3">
-          <h3 className="font-medium text-gray-900 line-clamp-1">{title}</h3>
+          <h3 className="font-medium text-gray-900 line-clamp-2">{title}</h3>
           
           <div className="mt-1">
-            <span className="font-bold text-brand-green">
+            <span className="font-bold text-green-600">
               {price.toLocaleString()} ETB
             </span>
           </div>

@@ -9,6 +9,11 @@ import Products from '@/pages/Products';
 import ProductDetail from '@/pages/ProductDetail';
 import SellProduct from '@/pages/SellProduct';
 import Category from '@/pages/Category';
+import FAQ from '@/pages/FAQ';
+import Charts from '@/pages/Charts';
+import Orders from '@/pages/Orders';
+import Wishlist from '@/pages/Wishlist';
+import Profile from '@/pages/Profile';
 import NotFound from '@/pages/NotFound';
 import Fashion from '@/pages/categories/Fashion';
 import Home from '@/pages/categories/Home';
@@ -86,6 +91,38 @@ export const router = createBrowserRouter([
   {
     path: '/pages/categories/Others',
     element: <Layout><Others /></Layout>,
+  },
+  {
+    path: '/faq',
+    element: <Layout><FAQ /></Layout>,
+  },
+  {
+    path: '/charts',
+    element: <Layout><Charts /></Layout>,
+  },
+  {
+    path: '/orders',
+    element: (
+      <ProtectedRoute>
+        <Layout><Orders /></Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/wishlist',
+    element: (
+      <ProtectedRoute>
+        <Layout><Wishlist /></Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <Layout><Profile /></Layout>
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/sell',
