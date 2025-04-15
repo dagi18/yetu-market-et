@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Mail, Phone, MapPin, Edit } from "lucide-react";
+import { Loader2, Mail, Phone, MapPin, Edit, Calendar } from "lucide-react";
 
 interface ProfileFormProps {
   firstName: string;
